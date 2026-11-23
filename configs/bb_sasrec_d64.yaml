@@ -1,0 +1,36 @@
+# Backbone: SASRec (d = 64), leave-one-out split, full-softmax cross-entropy.
+n_layers: 2
+n_heads: 2
+hidden_size: 64
+inner_size: 256
+hidden_dropout_prob: 0.5
+attn_dropout_prob: 0.5
+hidden_act: 'gelu'
+layer_norm_eps: 1e-12
+initializer_range: 0.02
+loss_type: 'CE'                 # run.py also sets train_neg_sample_args=None for SASRec (full softmax)
+
+learner: adam
+learning_rate: 0.001
+train_batch_size: 2048
+eval_batch_size: 4096
+epochs: 300
+stopping_step: 10               # early-stopping patience
+valid_metric: NDCG@10
+topk: [10]
+seed: 2020
+reproducibility: True
+
+eval_args:                      # leave-one-out: last item = test, second to last = validation
+  split: {'LS': 'valid_and_test'}
+  order: TO
+  group_by: user
+  mode: full
+MAX_ITEM_LIST_LENGTH: 50        # M = 50 for all datasets (overrides smaller values in recbole/properties/dataset/)
+normalize_all: True             # changes the tie order of equal timestamps, hence the split
+load_col:
+  inter: [user_id, item_id, rating, timestamp]
+
+checkpoint_dir: saved           # relative to the working folder
+metrics: ["Recall", "NDCG", "Hit", "GiniIndex", "AveragePopularity", "ItemCoverage", "ItemCoverageN", "UPD",
+          "NDCGTail", "NDCGHead", "NDCGMid"]

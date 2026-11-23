@@ -1,0 +1,29 @@
+# data, checkpoints and run outputs
+/dataset/
+/raw/
+/saved/
+/log/
+/log_tensorboard/
+/results/
+/wandb/
+*.pth
+*.h5
+*.npz
+tune_*.csv
+tune_*.csv.partial.csv
+interp_*.csv
+selection*.csv
+normality*.csv
+
+# Python / environments
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store

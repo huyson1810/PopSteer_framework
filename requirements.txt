@@ -1,0 +1,21 @@
+# pip alternative to uv.lock (any platform). Install a PyTorch build for your CUDA/CPU first, see pytorch.org.
+torch>=1.10.0
+numpy>=1.17.2,<2
+scipy>=1.6.0
+pandas>=1.3.0,<3
+hyperopt==0.2.5
+tqdm>=4.48.2
+scikit-learn>=0.23.2
+pyyaml>=5.1.0
+colorlog>=4.7.2
+colorama>=0.4.4
+tensorboard>=2.5.0
+thop
+ray[tune]
+tabulate>=0.8.10
+plotly>=4.0.0
+texttable>=0.9.0
+psutil>=5.9.0
+matplotlib
+h5py
+umap-learn

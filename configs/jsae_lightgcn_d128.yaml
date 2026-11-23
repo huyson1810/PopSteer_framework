@@ -1,0 +1,44 @@
+# Joint user + item SAE (LightGCN_JSAE) on a frozen LightGCN d = 128 backbone; used by the variant UI-R.
+# Each modality is standardised with its own mean and scalar scale before the shared SAE.
+# Backbone settings repeat bb_lightgcn_d128.yaml so the split is identical.
+# Per-run command-line overrides: --base_path=<absolute path to the backbone .pth> --sae_scale_size=<s> --sae_k=<K>
+embedding_size: 128
+n_layers: 2
+reg_weight: 1e-05
+eval_args:
+  split: {'RS': [0.8, 0.1, 0.1]}
+  order: RO
+  group_by: user
+  mode: full
+train_neg_sample_args:
+  distribution: uniform
+  sample_num: 1
+  alpha: 1.0
+  dynamic: False
+  candidate_num: 0
+load_col:
+  inter: [user_id, item_id]
+user_inter_num_interval: "[0,inf)"
+item_inter_num_interval: "[0,inf)"
+seed: 2020
+reproducibility: True
+
+# shared SAE on standardised propagated user and item embeddings
+sae_scale_size: 32              # paper grid s in {16, 32, 48}
+sae_k: 32                       # paper grid K in {16, 32}
+input_dim: 128
+learner: adam
+learning_rate: 0.01             # initial learning rate of ReduceLROnPlateau
+sae_lr_patience: 10             # ReduceLROnPlateau patience (code default 20)
+train_batch_size: 2048
+eval_batch_size: 4096
+epochs: 300
+stopping_step: 10
+steer: 0
+analyze: False
+alpha: 1.0
+topk: [10]
+checkpoint_dir: saved
+valid_metric: SAE_Loss_total     # early stopping on the validation reconstruction loss, users + items (smaller = better)
+valid_metric_bigger: False
+metrics: ["NDCG", "GiniIndex", "AveragePopularity", "ItemCoverageN", "UPD", "SAE_Loss_u", "SAE_Loss_i", "SAE_Loss_total"]
