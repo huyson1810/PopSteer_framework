@@ -87,13 +87,12 @@ to `./dataset/<name>/`. All commands below therefore run from the repository roo
 | Dataset (`--dataset`) | Source | Filtering in the paper |
 |---|---|---|
 | `ml-1mm` | [MovieLens 1M](https://grouplens.org/datasets/movielens/1m/) | 5-core version shipped with the original PopSteer code (`dataset/ml-1mm/ml-1mm.inter` in [PopSteer2.0](https://github.com/parepic/PopSteer2.0)): 6,040 users, 3,416 items, 999,611 interactions |
-| `BeerAdvocate` | [BeerAdvocate reviews](https://cseweb.ucsd.edu/~jmcauley/datasets.html#multi_aspect) (McAuley et al.) | 10-core, duplicates kept: 10,463 / 13,906 / 1,395,865 |
-| `yelp2018` | [Yelp Open Dataset](https://www.yelp.com/dataset) | 20-core, duplicates kept: 20,798 / 16,252 / 983,530 |
-| `amazon-musical` | [Amazon Review Data 2018](https://nijianmo.github.io/amazon/) (Ni et al., EMNLP 2019), *Musical Instruments* 5-core reviews | duplicates removed, 5-core: 24,780 / 9,930 / 206,241 |
-| `amazon-game10` | Amazon Review Data 2018, *Video Games* 5-core reviews | duplicates removed, 10-core: 5,942 / 3,793 / 103,778 |
+| `BeerAdvocate` | [BeerAdvocate reviews](https://cseweb.ucsd.edu/~jmcauley/datasets.html#multi_aspect) (McAuley et al.) | 10-core: 10,463 / 13,906 / 1,395,865 |
+| `yelp2018` | [Yelp Open Dataset](https://www.yelp.com/dataset) | 20-core: 20,798 / 16,252 / 983,530 |
+| `amazon-musical` | [Amazon Review Data 2018](https://nijianmo.github.io/amazon/) (Ni et al., EMNLP 2019), *Musical Instruments* 5-core reviews | 5-core: 24,780 / 9,930 / 206,241 |
+| `amazon-game10` | Amazon Review Data 2018, *Video Games* 5-core reviews | 10-core: 5,942 / 3,793 / 103,778 |
 
-Counts are users / items / interactions after filtering. "Duplicates removed" keeps the earliest (user, item) pair by
-timestamp. The k-core filter is iterative.
+Counts are users / items / interactions after filtering. The k-core filter is iterative.
 
 1. Obtain the raw data as RecBole atomic files, e.g. from
    [RecSysDatasets](https://github.com/RUCAIBox/RecSysDatasets) or with its conversion scripts. Place them as

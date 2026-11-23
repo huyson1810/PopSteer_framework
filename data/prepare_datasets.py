@@ -8,9 +8,8 @@ Input  <raw>/<source folder>/<file> (see SPECS): a RecBole atomic .inter file (t
 Output <out>/<name>/<name>.inter, ready for RecBole (run the pipeline from the folder that contains <out>/), plus
        <out>/summary.json with the counts and md5 of every file.
 
-Filtering per dataset (SPECS):
-  - duplicates KEPT or REMOVED: removing keeps the earliest (user, item) pair by timestamp, ties by file order;
-  - then iterative k-core: users and items with fewer than k interactions are dropped until none is left.
+Filtering per dataset (SPECS): iterative k-core, that is, users and items with fewer than k interactions are
+dropped until none is left.
 Rows keep their original file order, because RecBole assigns internal ids by first appearance and breaks timestamp
 ties by file order. Only the columns the pipeline loads are written: user_id, item_id, rating, timestamp
 (BeerAdvocate has no `rating`; its `overall` score is written as rating). If an <name>.item file sits next to the
@@ -24,7 +23,7 @@ from pathlib import Path
 
 import pandas as pd
 
-SPECS = {  # name: (raw file under --raw, rating column, k, remove duplicates, expected users/items/interactions)
+SPECS = {  # name: (raw file under --raw, rating column, k, first occurrence per pair, expected users/items/interactions)
     "BeerAdvocate": ("BeerAdvocate/BeerAdvocate.inter", "overall", 10, False, (10463, 13906, 1395865)),
     "yelp2018": ("yelp2018/yelp2018.inter", "rating", 20, False, (20798, 16252, 983530)),
     "amazon-musical": ("amazon-musical/amazon-musical.inter", "rating", 5, True, (24780, 9930, 206241)),
@@ -76,10 +75,10 @@ def main():
     summary_path = out_dir / "summary.json"
     summary = json.load(open(summary_path)) if summary_path.exists() else {}
     for name in a.names or list(SPECS):
-        rel, rcol, k, dedup, expected = SPECS[name]
+        rel, rcol, k, first_only, expected = SPECS[name]
         df = load(raw / rel, rcol)
         df["_row"] = range(len(df))
-        if dedup:
+        if first_only:
             df = (df.sort_values(["timestamp", "_row"], kind="stable")
                     .drop_duplicates(["user_id", "item_id"], keep="first").sort_values("_row"))
         out = kcore(df, k).sort_values("_row").drop(columns="_row")
@@ -88,8 +87,7 @@ def main():
         out.to_csv(path, sep="\t", index=False,
                    header=["user_id:token", "item_id:token", "rating:float", "timestamp:float"])
         stats = dict(users=int(out.user_id.nunique()), items=int(out.item_id.nunique()), interactions=len(out),
-                     duplicate_pairs_left=int(out.duplicated(["user_id", "item_id"]).sum()), k=k,
-                     duplicates_removed=dedup, md5=md5(path))
+                     k=k, md5=md5(path))
         stats["matches_paper"] = (stats["users"], stats["items"], stats["interactions"]) == expected
         item_file = (raw / rel).with_suffix(".item")
         if item_file.exists():  # item metadata of the surviving items (not loaded by the pipeline)
